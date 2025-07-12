@@ -1,41 +1,72 @@
-# Website-blocker
+# Website-Blocker
 import time
+from datetime import datetime as dt
 
-# List of websites to block
-websites_to_block = ["www.facebook.com", "facebook.com", "www.instagram.com", "instagram.com"]
+# Path to the hosts file (adjust for Windows/Mac/Linux)
+hosts_path = "/etc/hosts"  # Linux/Mac
+# hosts_path = r"C:\Windows\System32\drivers\etc\hosts"  # Windows
 
-# Path to the hosts file (Windows/Unix-based systems)
-hosts_path = "/etc/hosts"  # For Linux/Mac
-# hosts_path = r"C:\Windows\System32\drivers\etc\hosts"  # For Windows
-
-# Redirect to the localhost (this makes the websites unreachable)
 redirect = "127.0.0.1"
+websites_to_block = [
+    "www.facebook.com",
+    "facebook.com",
+    
+]
 
-def block_websites():
-    while True:
-        # Open the hosts file
+# Define blocking hours (e.g., 9 AM to 5 PM)
+block_start = 9  # 9 AM
+block_end = 17  # 5 PM
+
+while True:
+    current_hour = dt.now().hour
+
+    if block_start <= current_hour < block_end:
+        print("Work hours... Blocking sites")
         with open(hosts_path, "r+") as file:
             content = file.read()
             for website in websites_to_block:
-                # Check if the website is already blocked
                 if website not in content:
-                    # Block website by adding entry to the hosts file
-                    file.write(f"\n{redirect} {website}")
-                    print(f"Blocking {website}...")
-        time.sleep(10)
+                    file.write(f"{redirect} {website}\n")
+    else:
+        print("Outside work hours... Unblocking sites")
+        with open(hosts_path, "r+") as file:
+            content = file.readlines()
+            file.seek(0)
+            for line in content:
+                if not any(website in line for website in websites_to_block):
+                    file.write(line)
+            file.truncate()
+    
+    time.sleep(300)  # Sleep for 5 minutes# Website-Blocker
+import time
+from datetime import datetime as dt
 
-def unblock_websites():
-    with open(hosts_path, "r+") as file:
-        content = file.readlines()
-        file.seek(0)
-        for line in content:
-            # Remove the lines that contain the website to unblock
-            if not any(website in line for website in websites_to_block):
-                file.write(line)
-        file.truncate()
+# Path to the hosts file (adjust for Windows/Mac/Linux)
+hosts_path = "/etc/hosts"  # Linux/Mac
+# hosts_path = r"C:\Windows\System32\drivers\etc\hosts"  # Windows
 
-# Block websites for 60 seconds
-block_websites()
+redirect = "127.0.0.1"
+websites_to_block = [
+    "www.facebook.com",
+    "facebook.com",
+    
+]
 
-# Uncomment to unblock after testing
-# unblock_websites()
+# Define blocking hours (e.g., 9 AM to 5 PM)
+block_start = 9  # 9 AM
+block_end = 17  # 5 PM
+
+while True:
+    current_hour = dt.now().hour
+
+    if block_start <= current_hour < block_end:
+        print("Work hours... Blocking sites")
+        with open(hosts_path, "r+") as file:
+            content = file.read()
+            for website in websites_to_block:
+                if website not in content:
+                    file.write(f"{redirect} {website}\n")
+    else:
+        print("Outside work hours... Unblocking sites")
+        
+ time.sleep(300)  # Sleep for 5 minutes
